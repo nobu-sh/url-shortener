@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
+const dotenv = require('dotenv')
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') })
+
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
+
+const PORT = parseInt(process.env.PORT, 10)
 
 module.exports = () => ({
   plugins : [
@@ -81,11 +86,12 @@ module.exports = () => ({
   devtool: process.env.NODE_ENV === 'production' ? false : 'source-map',
 
   devServer: {
-    port: Number(process.env.PORT) || 6969,
+    port: PORT,
     host: '0.0.0.0',
     historyApiFallback: true,
     proxy: {
-      '/api': 'http://localhost:6970',
+      '/api': `http://localhost:${PORT - 1}`,
+      '/r': `http://localhost:${PORT - 1}`,
     },
   },
 })

@@ -16,12 +16,16 @@
     "build:server": "cross-env NODE_ENV=production tsc -p tsconfig.json",
     "lint": "npm run lint:server && npm run lint:client",
     "lint:server": "eslint \"server/**.{ts,tsx}\"",
-    "lint:client": "eslint \"client/src/**.{ts,tsx}\""
+    "lint:client": "eslint \"client/src/**.{ts,tsx}\"",
+    "seed": "ts-node server/database/seedDb.ts"
   },
   "dependencies": {
     "axios": "^0.21.1",
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "dotenv": "^16.0.3",
+    "express": "^4.18.1",
+    "sequelize": "^6.25.0",
+    "sqlite3": "^5.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
