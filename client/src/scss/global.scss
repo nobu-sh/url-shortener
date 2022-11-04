@@ -265,3 +265,7 @@ input[type='checkbox'] {
   }
 }
 
+*:focus {
+  outline: 1px solid var(--accent);
+}
+

@@ -13,9 +13,12 @@ import {
 import "./Init.scss"
 import { useRecoilState } from 'recoil'
 import { initState } from '../../state'
+import { useHistory } from 'react-router-dom'
+import { WaitUntilReady } from '../../components/WaitUntilReady'
 
 const Init: React.FC = () => {
-  const [, setInit] = useRecoilState(initState)
+  const history = useHistory()
+  const [init, setInit] = useRecoilState(initState)
 
   // Username State
   const usernameState = useInputComponent()
@@ -64,6 +67,7 @@ const Init: React.FC = () => {
     })
       .then(() => {
         setInit(false)
+        history.push('/auth')
       })
       .catch((err: AxiosError<ResponseBoilerPlate<{ notice?: string }>>) => {
         if (err.response?.data?.data?.notice)
@@ -77,39 +81,49 @@ const Init: React.FC = () => {
   }
 
   return (
-    <AuthPage
-      className='Init'
-      title={(<>Setup root user account</>)}
-      description={(<>First time setup, you need to create a root account.</>)}
-      error={error}
+    <WaitUntilReady
+      beforeRender={() => {
+        console.log(init)
+        if (!init) return '/auth'
+      }}
     >
-      <InputComponent
-        state={usernameState}
-        disable={busy}
-        placeholder='Enter a username'
-        autofill="username"
-        validator={usernameValidator}
-      >Username</InputComponent>
-      <PasswordComponent
-        state={passwordState}
-        disable={busy}
-        placeholder='Enter a password'
-        autofill="new-password"
-        validator={passwordValidator}
-      >Password</PasswordComponent>
-      <PasswordComponent
-        state={password2State}
-        disable={busy}
-        placeholder='Enter password again'
-        autofill="current-password"
-        validator={(value) => {
-          if (value !== password) return 'Passwords do not match'
+      <AuthPage
+        className='Init'
+        title={(<>Setup root user account</>)}
+        description={(<>First time setup, you need to create a root account.</>)}
+        error={error}
+      >
+        <InputComponent
+          state={usernameState}
+          disable={busy}
+          placeholder='Enter a username'
+          autofill="username"
+          validator={usernameValidator}
+          onSubmit={createAccount}
+        >Username</InputComponent>
+        <PasswordComponent
+          state={passwordState}
+          disable={busy}
+          placeholder='Enter a password'
+          autofill="new-password"
+          validator={passwordValidator}
+          onSubmit={createAccount}
+        >Password</PasswordComponent>
+        <PasswordComponent
+          state={password2State}
+          disable={busy}
+          placeholder='Enter password again'
+          autofill="current-password"
+          validator={(value) => {
+            if (value !== password) return 'Passwords do not match'
 
-          return undefined
-        }}
-      >Re-enter Password</PasswordComponent>
-      <AuthButton busy={busy} disable={disable()} onInteract={createAccount}>Create Account</AuthButton>
-    </AuthPage>
+            return undefined
+          }}
+          onSubmit={createAccount}
+        >Re-enter Password</PasswordComponent>
+        <AuthButton busy={busy} disable={disable()} onInteract={createAccount}>Create Account</AuthButton>
+      </AuthPage>
+    </WaitUntilReady>
   )
 }
 

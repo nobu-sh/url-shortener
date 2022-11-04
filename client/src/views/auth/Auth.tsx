@@ -10,12 +10,13 @@ import {
 } from '../../utils'
 
 import {
-  Link,
+  Link, useHistory,
 } from 'react-router-dom'
 import {
-  useRecoilState,
+  useRecoilState, useRecoilValue,
 } from 'recoil'
 import {
+  initState,
   setStoredToken, userState, 
 } from '../../state'
 import {
@@ -27,9 +28,12 @@ import {
 import { AxiosError } from 'axios'
 
 import "./Auth.scss"
+import { WaitUntilReady } from '../../components/WaitUntilReady'
 
 const Auth: React.FC = () => {
-  const [, setUser] = useRecoilState(userState)
+  const [user, setUser] = useRecoilState(userState)
+  const init = useRecoilValue(initState)
+  const history = useHistory()
 
   // Username State
   const usernameState = useInputComponent()
@@ -79,6 +83,7 @@ const Auth: React.FC = () => {
       .then(({ data: { data } }) => {
         setStoredToken(data.accessToken)
         setUser(data)
+        history.push('/dashboard')
       })
       .catch((err: AxiosError<ResponseBoilerPlate<{ notice?: string }>>) => {
         if (err.response?.data?.data?.notice)
@@ -91,35 +96,44 @@ const Auth: React.FC = () => {
   }
 
   return (
-    <AuthPage
-      className='Auth'
-      title={(<>Log in to your account</>)}
-      description={(<>Welcome back! Please enter your details<br />or create a new account.</>)}
-      error={error}
+    <WaitUntilReady
+      beforeRender={() => {
+        if (init) return '/init'
+        if (user) return '/dashboard'
+      }}
     >
-      <InputComponent
-        state={usernameState}
-        disable={busy}
-        placeholder='Enter your username'
-        validator={usernameValidator}
-        autofill="username"
-      >Username</InputComponent>
-      <PasswordComponent
-        state={passwordState}
-        disable={busy}
-        placeholder='Enter your password'
-        validator={passwordValidator}
-        autofill="current-password"
-      >Password</PasswordComponent>
-      <CheckboxComponent
-        state={extendedState}
-        disable={busy}
-      >Extended Login <span>(30 Days)</span></CheckboxComponent>
-      <div className="LoginOrSignUp">
-        <AuthButton busy={busy} disable={disable()} onInteract={signIn}>Sign In</AuthButton>
-        <p className='SignUp'>or <Link to="/auth/signup">Sign Up</Link></p>
-      </div>
-    </AuthPage>
+      <AuthPage
+        className='Auth'
+        title={(<>Log in to your account</>)}
+        description={(<>Welcome back! Please enter your details<br />or create a new account.</>)}
+        error={error}
+      >
+        <InputComponent
+          state={usernameState}
+          disable={busy}
+          placeholder='Enter your username'
+          validator={usernameValidator}
+          autofill="username"
+          onSubmit={signIn}
+        >Username</InputComponent>
+        <PasswordComponent
+          state={passwordState}
+          disable={busy}
+          placeholder='Enter your password'
+          validator={passwordValidator}
+          autofill="current-password"
+          onSubmit={signIn}
+        >Password</PasswordComponent>
+        <CheckboxComponent
+          state={extendedState}
+          disable={busy}
+        >Extended Login <span>(30 Days)</span></CheckboxComponent>
+        <div className="LoginOrSignUp">
+          <AuthButton busy={busy} disable={disable()} onInteract={signIn}>Sign In</AuthButton>
+          <p className='SignUp'>or <Link to="/auth/signup">Sign Up</Link></p>
+        </div>
+      </AuthPage>
+    </WaitUntilReady>
   )
 }
 

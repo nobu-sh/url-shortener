@@ -5,7 +5,6 @@ import { readyState } from '../state'
 
 interface WURP {
   className?: string
-  /** */
   beforeRender?: () => void | string
 }
 export const WaitUntilReady: React.FC<WURP> = ({ children, className, beforeRender }) => {
@@ -18,7 +17,7 @@ export const WaitUntilReady: React.FC<WURP> = ({ children, className, beforeRend
   const b = React.useMemo(() => {
     if (!ready) return
 
-    return beforeRender()
+    return beforeRender ? beforeRender() : undefined
   }, [ready])
 
   // We need to useEffect to handle the redirect so it occurs after render

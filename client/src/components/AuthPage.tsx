@@ -1,11 +1,6 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
-import { useRecoilValue } from 'recoil'
 import XCircle from '../assets/icons/XCircle'
-import { WaitUntilReady } from './WaitUntilReady'
-import {
-  initState, readyState, userState, 
-} from '../state'
 import EyeOff from '../assets/icons/EyeOff'
 import Eye from '../assets/icons/Eye'
 
@@ -25,30 +20,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   error,
 }) => {
   const history = useHistory()
-  const init = useRecoilValue(initState)
-  const user = useRecoilValue(userState)
-  const ready = useRecoilValue(readyState)
-
-  // We want to check these constantly on the auth pages to ensure we redirect when updated
-  React.useEffect(() => {
-    if (!ready) return
-    if (init) return history.push('/init')
-    if (user) return history.push('/dashboard')
-    if (!history.location.pathname.toLowerCase().startsWith('/auth'))
-      return history.push('/auth')
-  }, [init, user, ready])
 
   return (
-    <WaitUntilReady 
-      className={`AuthPage ${className ?? ''}`}
-      // We want to check these before render to avoid a "render flash"
-      beforeRender={() => {
-        if (init) return '/init'
-        if (user) return '/dashboard'
-        if (!history.location.pathname.toLowerCase().startsWith('/auth'))
-          return '/auth'
-      }}
-    >
+    <div className={`AuthPage ${className ?? ''}`}>
       <div className="ToHome" onClick={() => history.push('/')}>
         <XCircle />
       </div>
@@ -68,7 +42,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           }
         </div>
       </div>
-    </WaitUntilReady>
+    </div>
   )
 }
 
@@ -85,6 +59,7 @@ interface UseInputProps {
   validator?: (i: string) => string | undefined
   state: UseInputTuple
   max?: number
+  onSubmit?: () => void
 }
 export const InputComponent: React.FC<UseInputProps> = ({
   className,
@@ -96,6 +71,7 @@ export const InputComponent: React.FC<UseInputProps> = ({
   validator,
   children,
   max,
+  onSubmit,
 }) => {
   const [inputState, inputErrorState] = state
   const [input, setInput] = inputState
@@ -112,6 +88,10 @@ export const InputComponent: React.FC<UseInputProps> = ({
         onChange={(e) => {
           if (validator) setInputError(validator(e.target.value))
           setInput(e.target.value)
+        }}
+        onKeyDown={(event) => {
+          if (onSubmit && event.key === 'Enter')
+            onSubmit()
         }}
         disabled={disable}
         maxLength={max}
@@ -148,6 +128,7 @@ interface UsePasswordProps {
   validator?: (i: string) => string | undefined
   state: UsePasswordTuple
   max?: number
+  onSubmit?: () => void
 }
 export const PasswordComponent: React.FC<UsePasswordProps> = ({
   className,
@@ -159,6 +140,7 @@ export const PasswordComponent: React.FC<UsePasswordProps> = ({
   children,
   state,
   max,
+  onSubmit,
 }) => {
   const [passwordState, passwordErrorState] = state
   const [password, setPassword] = passwordState
@@ -178,6 +160,10 @@ export const PasswordComponent: React.FC<UsePasswordProps> = ({
           onChange={(e) => {
             if (validator) setPasswordError(validator(e.target.value))
             setPassword(e.target.value)
+          }}
+          onKeyDown={(event) => {
+            if (onSubmit && event.key === 'Enter')
+              onSubmit()
           }}
           disabled={disable}
           maxLength={max}

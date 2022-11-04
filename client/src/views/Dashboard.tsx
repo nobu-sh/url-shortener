@@ -1,9 +1,8 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom'
 import { useRecoilValue } from 'recoil'
 import { WaitUntilReady } from '../components/WaitUntilReady'
 import {
-  readyState, userState, 
+  userState, 
 } from '../state'
 
 import './Dashboard.scss'

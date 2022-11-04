@@ -8,7 +8,10 @@ import {
   AuthButton,
   AuthPage, InputComponent, PasswordComponent, useInputComponent, usePasswordComponent, 
 } from '../../components/AuthPage'
-import { inviteState } from '../../state'
+import { WaitUntilReady } from '../../components/WaitUntilReady'
+import {
+  initState, inviteState, userState, 
+} from '../../state'
 import { ResponseBoilerPlate } from '../../types'
 import {
   passwordValidator, Request, usernameValidator, 
@@ -18,6 +21,8 @@ import './SignUp.scss'
 
 export const SignUp: React.FC = () => {
   const inviteOnly = useRecoilValue(inviteState)
+  const user = useRecoilValue(userState)
+  const init = useRecoilValue(initState)
   const history = useHistory()
 
   // Username State
@@ -97,60 +102,71 @@ export const SignUp: React.FC = () => {
   }
 
   return (
-    <AuthPage
-      className='SignUp'
-      title={<>Create a new account</>}
-      description={<>First time here? No problem, create a new<br />account below!</>}
-      error={error}
+    <WaitUntilReady
+      beforeRender={() => {
+        if (init) return '/init'
+        if (user) return '/dashboard'
+      }}
     >
-      <InputComponent
-        state={usernameState}
-        disable={busy}
-        placeholder='Enter a username'
-        validator={usernameValidator}
-        autofill="username"
-      >Username</InputComponent>
-      <PasswordComponent
-        state={passwordState}
-        disable={busy}
-        placeholder='Enter a password'
-        validator={passwordValidator}
-        autofill="new-password"
-      >Password</PasswordComponent>
-      <PasswordComponent
-        state={password2State}
-        disable={busy}
-        placeholder='Enter password again'
-        autofill="current-password"
-        validator={(value) => {
-          if (value !== password) return 'Passwords do not match'
+      <AuthPage
+        className='SignUp'
+        title={<>Create a new account</>}
+        description={<>First time here? No problem, create a new<br />account below!</>}
+        error={error}
+      >
+        <InputComponent
+          state={usernameState}
+          disable={busy}
+          placeholder='Enter a username'
+          validator={usernameValidator}
+          autofill="username"
+          onSubmit={createAccount}
+        >Username</InputComponent>
+        <PasswordComponent
+          state={passwordState}
+          disable={busy}
+          placeholder='Enter a password'
+          validator={passwordValidator}
+          autofill="new-password"
+          onSubmit={createAccount}
+        >Password</PasswordComponent>
+        <PasswordComponent
+          state={password2State}
+          disable={busy}
+          placeholder='Enter password again'
+          autofill="current-password"
+          validator={(value) => {
+            if (value !== password) return 'Passwords do not match'
 
-          return undefined
-        }}
-      >Re-enter Password</PasswordComponent>
-      {
-        inviteOnly
-          ? <PasswordComponent
-            state={inviteKeyState}
-            disable={busy}
-            placeholder='00000000-0000-0000-0000-000000000000'
-            max={36}
-            autofill="off"
-            validator={(value) => {
-              if (!value.length) return 'Invite key required'
-              if (!/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(value))
-                return 'Invalid key format'
+            return undefined
+          }}
+          onSubmit={createAccount}
+        >Re-enter Password</PasswordComponent>
+        {
+          inviteOnly
+            ? <PasswordComponent
+              state={inviteKeyState}
+              disable={busy}
+              placeholder='00000000-0000-0000-0000-000000000000'
+              max={36}
+              autofill="off"
+              validator={(value) => {
+                if (!value.length) return 'Invite key required'
+                if (!/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(value))
+                  return 'Invalid key format'
 
-              return undefined
-            }}
-          >Invite Key</PasswordComponent>
-          : ''
-      }
-      <div className="LoginOrSignUp">
-        <AuthButton busy={busy} disable={disable()} onInteract={createAccount}>Create Account</AuthButton>
-        <p className='SignUp'>or <Link to="/auth">Sign In</Link></p>
-      </div>
-    </AuthPage>
+                return undefined
+              }}
+              onSubmit={createAccount}
+            >Invite Key</PasswordComponent>
+            : ''
+        }
+        <div className="LoginOrSignUp">
+          <AuthButton busy={busy} disable={disable()} onInteract={createAccount}>Create Account</AuthButton>
+          <p className='SignUp'>or <Link to="/auth">Sign In</Link></p>
+        </div>
+      </AuthPage>
+    </WaitUntilReady>
   )
 }
 
