@@ -8,7 +8,7 @@ export interface LinkModel {
   value: string
 }
 
-class Link extends Sequelize.Model<LinkModel> {}
+class Link extends Sequelize.Model<LinkModel, Omit<LinkModel, 'id'>> {}
 Link.init(
   {
     id: {

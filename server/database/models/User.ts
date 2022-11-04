@@ -10,9 +10,10 @@ export interface UserModel {
    * USER - Allowed to create shortened links.
    */
   role: 'INIT' | 'ADMIN' | 'USER'
+  password: string
 }
 
-class User extends Sequelize.Model<UserModel> {}
+class User extends Sequelize.Model<UserModel, Omit<UserModel, 'id'>> {}
 User.init(
   {
     id: {
@@ -28,6 +29,10 @@ User.init(
       type: Sequelize.STRING,
       allowNull: false,
       defaultValue: 'USER',
+    },
+    password: {
+      type: Sequelize.STRING,
+      allowNull: false,
     },
   },
   {

@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { RecoilRoot } from 'recoil'
 
 import App from './base/App'
 
-ReactDOM.render(<App />, document.querySelector('#root'))
+ReactDOM.render(<RecoilRoot><App /></RecoilRoot>, document.querySelector('#root'))

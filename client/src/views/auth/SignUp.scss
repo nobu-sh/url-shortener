@@ -1,0 +1,30 @@
+@import '../../scss/breakpoints.scss';
+
+.SignUp {
+  div.LoginOrSignUp {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+    p.SignUp {
+      // opacity: 70%;
+      font-size: 14px;
+      line-height: 18px;
+      color: var(--text-teritary);
+      a {
+        color: var(--accent);
+      }
+    }
+  }
+}
+
+.InviteCode {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 2px;
+  .Dash {
+    height: 28px;
+  }
+}

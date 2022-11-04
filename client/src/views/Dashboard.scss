@@ -1,0 +1,42 @@
+.Dashboard {
+  user-select: none;
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .Clamp {
+    max-width: 1220px;
+    padding: 0px 20px 176px 20px; // 72px
+    width: 100%;
+  }
+}
+
+.Nav {
+  width: 100%;
+  height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .User {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    .Name {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .Div {
+      color: var(--text-teritary);
+    }
+    .Role {
+      text-transform: lowercase;
+      font-weight: 800;
+      color: var(--text-secondary);
+      color: var(--accent);
+      border-radius: 4px;
+      letter-spacing: 0.4px;
+    }
+  }
+}

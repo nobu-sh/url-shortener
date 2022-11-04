@@ -1,5 +1,28 @@
-html {
-  --background: #1a0d0d;
-  --accent: #ff6969;
-  --text: #ffffff;
+@import './breakpoints.scss';
+
+// Base Variables
+:root {
+  --clamp: 1240px;
+  --padding: 24px 40px;
+  --padding-y: 24px;
+  --padding-x: 40px;
+}
+
+// Shades
+:root {
+  --white: #ffffff;
+  --black: #000000;
+}
+
+// Background
+:root {
+  --background-primary: #181717;
+  --accent: #A793FF;
+}
+
+// Text
+:root {
+  --text-primary: rgb(207, 207, 207);
+  --text-secondary: rgb(179, 183, 188);
+  --text-teritary: rgb(101, 103, 106);
 }

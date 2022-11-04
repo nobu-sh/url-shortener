@@ -64,6 +64,7 @@ function parseRegex(str: string): string {
     // Remove escapes
     .replace(/\\/gi, '')
     // Remove Parameter And Query Regex
+    // eslint-disable-next-line no-useless-escape
     .replace(/\?\(\?\=\/\|\$\)|\(\?\:\(\[\^\/\]\+\?\)\)/gi, '')
     // Remove any remaining hanging crap.
     .replace(/(\/+$|\$$|\/\?$)/g, '')
@@ -71,6 +72,7 @@ function parseRegex(str: string): string {
     .slice(1)
   // If the left over is this weird shit then its a wildcard
   if (parser === '(.*)') return '*'
+  
   return parser
 }
 
@@ -103,10 +105,16 @@ function updatePath(map: DescribedAPI, route: Route, routePrefix = ''): void {
   // Generate the complete path with and parent router prefix
   const finalPath = `${routePrefix}${route.path === '*' ? '/*' : route.path}`
   // Attempt to fetch previous data from the map
-  const methods = map.get(finalPath)
-  // If previous data then update it otherwise set new
-  if (methods) map.set(finalPath, { ...methods, ...route.methods })
-  else map.set(finalPath, route.methods)
+  let methods = {
+    ...map.get(finalPath),
+    ...route.methods,
+  }
+
+  // If there are more than or equal to 34 methods on a path its a root all handler.
+  const methodAmount = Object.values(methods).filter(i => i).length
+  if (methodAmount >= 34) methods = { _all: true }
+  
+  map.set(finalPath, methods)
 }
 
 /**
@@ -187,5 +195,3 @@ export function handleNotAllowed(api: DescribedAPI, app: Express) {
     })
   })
 }
-
-

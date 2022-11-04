@@ -1,4 +1,6 @@
-import { NextFunction, Request, Response } from 'express'
+import {
+  NextFunction, Request, Response, 
+} from 'express'
 
 export interface ResponseBoilerplate {
   type: string
@@ -71,4 +73,3 @@ export function responseHandler(req: Request, res: Response, next: NextFunction)
   res.pond = new ResponseHandler(req, res)
   next()
 }
-
